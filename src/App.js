@@ -1,24 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, Fragment } from 'react';
+import axios from 'axios';
 
 function App() {
+  const [ city, setCity ] = useState('');
+
+  const GetWeather = async (e) => {
+    e.preventDefault();
+
+    const userCity = e.target.elements.city.value;
+
+    try {
+      const params = {
+        access_key: '863dd42240a51c295b21d392e52e6899',
+        query: userCity
+      }
+  
+      const res = await axios.get('http://api.weatherstack.com/current', { params });
+      const data = res.data.current;
+      console.log(data);
+      setCity(data);
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div id="mainContainer">
+      <form onSubmit={ GetWeather }>
+        <input type="text" 
+          placeholder="City name" 
+          name="city"
+        />
+        <button type="submit">Get weather!</button>
+      </form>
+
+      { city 
+        ? <p> { city.temperature } </p>
+        : <Fragment /> 
+      }
     </div>
   );
 }
